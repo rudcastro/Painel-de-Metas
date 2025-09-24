@@ -98,6 +98,7 @@ Desafios Enfrentados:
    Integração de sistemas heterogêneos.
 
 Próximos Passos e Melhorias Sugeridas:
+
    Expansão da Segurança em Nível de Linha (RLS) para todos os perfis de usuários.
    Implementação de alertas e notificações automatizadas sobre o status das metas.
    Integração com ferramentas de colaboração e exploração de análises preditivas simples.
