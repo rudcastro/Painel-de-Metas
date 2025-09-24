@@ -1,0 +1,1853 @@
+// 0- public v_kincaid_notas_emitidas_suc_3
+let
+    Fonte = Oracle.Database("PROTHEUS", [HierarchicalNavigation=true]),
+    PROTHEUS = Fonte{[Schema="PROTHEUS"]}[Data],
+    V_PROTHEUS_BI_NOTAS_EMITIDAS1 = PROTHEUS{[Name="V_PROTHEUS_BI_NOTAS_EMITIDAS"]}[Data],
+    #"Tipo Alterado" = Table.TransformColumnTypes(V_PROTHEUS_BI_NOTAS_EMITIDAS1,{{"data_emissao", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"sigla_adv_contrato"}),
+    #"Linhas Filtradas" = Table.SelectRows(#"Valor Substituído", each ([sigla_adv_contrato] = "PUC"))
+in
+    #"Linhas Filtradas"
+
+// 0- Meta anual Fat
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (6)", each #"Transformar Arquivo (6)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (6)"}),
+    #"Transformar Arquivo (6)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (6)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (6)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 10- Despesas
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (30)", each #"Transformar Arquivo (30)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (30)"}),
+    #"Transformar Arquivo (30)1" = #"Outras Colunas Removidas1"{8}[#"Transformar Arquivo (30)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (30)1",{{"ano", Int64.Type}, {"mes", Int64.Type}, {"dia", type date}, {"grupo", type text}, {"tipo_despesa", type text}, {"Sócio", type text}, {"Descrição Despesa", type text}, {"EVENTO", type text}, {"valor", type number}, {"Sócio OU Advogado?", type text}}),
+    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"grupo"}),
+    #"Personalização Adicionada" = Table.AddColumn(#"Colunas Removidas", "Data", each [ano][mes]),
+    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"mes", Int64.Type}}),
+    #"Colunas Removidas1" = Table.RemoveColumns(#"Tipo Alterado1",{"Data"}),
+    #"Personalização Adicionada1" = Table.AddColumn(#"Colunas Removidas1", "Data formatada", each "01/" & [mes] & "/" & [ano]),
+    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Personalização Adicionada1",{{"ano", type text}, {"mes", type text}, {"Data formatada", type text}}),
+    #"Colunas Removidas2" = Table.RemoveColumns(#"Tipo Alterado2",{"Data formatada"}),
+    #"Personalização Adicionada2" = Table.AddColumn(#"Colunas Removidas2", "Data Formatada", each "01/" & [mes] & "/" & [ano]),
+    #"Tipo Alterado3" = Table.TransformColumnTypes(#"Personalização Adicionada2",{{"Data Formatada", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado3","LLM","PUC",Replacer.ReplaceText,{"Sócio"})
+in
+    #"Valor Substituído"
+
+// 10- Meta Anual Despesas
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat/", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (31)", each #"Transformar Arquivo (31)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (31)"}),
+    #"Transformar Arquivo (31)1" = #"Outras Colunas Removidas1"{9}[#"Transformar Arquivo (31)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (31)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 1- TabelaTS
+let
+    Fonte = Oracle.Database("PROTHEUS", [HierarchicalNavigation=true]),
+    PROTHEUS = Fonte{[Schema="PROTHEUS"]}[Data],
+    V_PROTHEUS_BI_TIME_SHEETS1 = PROTHEUS{[Name="V_PROTHEUS_BI_TIME_SHEETS"]}[Data],
+    #"Linhas Filtradas" = Table.SelectRows(V_PROTHEUS_BI_TIME_SHEETS1, each ([car_dsc] <> null and [car_dsc] <> "Consultor                                         " and [car_dsc] <> "Correspondente                                    " and [car_dsc] <> "Gerente de TI                                     ")),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Filtradas",{{"fun_dta_dem", type date}, {"tim_dta", type date}, {"tim_qdo", type text}, {"TS_CLIENTE_DT_ABERTURA", type date}, {"TS_CLIENTE_DT_ENCERRAMENTO", type date}, {"TS_CONTRATO_DATA_CADASTRO", type date}, {"TS_CONTRATO_VIGENCIA_INICIAL", type date}, {"TS_CONTRATO_VIGENCIA_FINAL", type date}, {"TS_DATA", type date}, {"TS_DATA_INCLUSAO", type date}, {"TS_HORA_INCLUSAO", type time}, {"TS_DATA_ALTERACAO", type date}, {"TS_HORA_ALTERACAO", type time}, {"TS_PROF_REV_DEMISSAO", type date}, {"TS_TEMPO_TRAB", type time}, {"TS_TEMPO_REV", type time}, {"TS_TEMPO_PROD", type time}, {"tim_ide", type number}, {"tim_fky_emp_ide", Int64.Type}, {"tim_flg_gra", Int64.Type}, {"caso_cobravel", Int64.Type}, {"tim_min", Int64.Type}, {"tim_hor_exi", type time}, {"tim_flg_atv", Int64.Type}, {"tim_fky_fco_ide", Int64.Type}, {"TS_CONTRATO_CODIGO", Int64.Type}, {"TS_CASO_CODIGO", Int64.Type}}),
+    #"Linhas Filtradas1" = Table.SelectRows(#"Tipo Alterado", each [tim_min] < 1440),
+    #"Colunas Removidas" = Table.RemoveColumns(#"Linhas Filtradas1",{"TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_DATA_CADASTRO"}),
+    #"Linhas Filtradas2" = Table.SelectRows(#"Colunas Removidas", each ([TS_SITUACAO] <> "EXCLUÍDO")),
+    #"Valor Substituído" = Table.ReplaceValue(#"Linhas Filtradas2","LLM","PUC",Replacer.ReplaceText,{"fun_mat"})
+in
+    #"Valor Substituído"
+
+// 1- Meta_Hora_Anual
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (11)", each #"Transformar Arquivo (11)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (11)"}),
+    #"Transformar Arquivo (11)1" = #"Outras Colunas Removidas1"{3}[#"Transformar Arquivo (11)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (11)1",{{"Sigla", type text}, {"equipe", type text}, {"Meta_Anual", Int64.Type}, {"ANO", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"Sigla"})
+in
+    #"Valor Substituído"
+
+// 11-Prospect
+let
+    Fonte = Oracle.Database("PROTHEUS", [HierarchicalNavigation=true]),
+    PROTHEUS = Fonte{[Schema="PROTHEUS"]}[Data],
+    V_KINCAID_EMPRESAS_P = PROTHEUS{[Name="V_KINCAID_EMPRESAS_P"]}[Data],
+    #"Linhas Filtradas" = Table.SelectRows(V_KINCAID_EMPRESAS_P, each ([classe_operacional] = "CLIENTE/PAGADOR") and ([PROSPECT_CONVERTIDO] = "EX-PROSPECT" or [PROSPECT_CONVERTIDO] = "PROSPECT" or [PROSPECT_CONVERTIDO] = "PROSPECT CONVERTIDO")),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Filtradas",{{"data_cadastramento", type date}, {"data_cliente", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"matr_responsavel"})
+in
+    #"Valor Substituído"
+
+// 11- Meta Prospect Anual
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (34)", each #"Transformar Arquivo (34)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (34)"}),
+    #"Transformar Arquivo (34)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (34)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (34)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL CLIENTE", Int64.Type}, {"Column4", type any}, {"Column5", type any}}),
+    #"Colunas Renomeadas" = Table.RenameColumns(#"Tipo Alterado",{{"META ANUAL CLIENTE", "META ANUAL PROSPECT"}}),
+    #"Colunas Removidas" = Table.RemoveColumns(#"Colunas Renomeadas",{"Column4", "Column5"}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Colunas Removidas","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// V_PROTHEUS_BI_CONTRATO
+let
+    Fonte = Oracle.Database("PROTHEUS", [HierarchicalNavigation=true]),
+    PROTHEUS = Fonte{[Schema="PROTHEUS"]}[Data],
+    V_PROTHEUS_BI_CONTRATO1 = PROTHEUS{[Name="V_PROTHEUS_BI_CONTRATO"]}[Data],
+    #"Linhas Filtradas" = Table.SelectRows(V_PROTHEUS_BI_CONTRATO1, each not Text.Contains([contrato], "[PROSP]")),
+    #"Linhas Filtradas1" = Table.SelectRows(#"Linhas Filtradas", each not Text.Contains([contrato], "[PROSPECT]")),
+    #"Linhas Filtradas2" = Table.SelectRows(#"Linhas Filtradas1", each not Text.Contains([contrato], "[EX-PROSPECT]")),
+    #"Linhas Filtradas3" = Table.SelectRows(#"Linhas Filtradas2", each not Text.Contains([contrato], "[EX-PROSP]")),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Filtradas3",{{"data_cadastro", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"matricula_funcionario"})
+in
+    #"Valor Substituído"
+
+// 3- Meta Contrato Anual
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (12)", each #"Transformar Arquivo (12)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (12)"}),
+    #"Transformar Arquivo (12)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (12)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (12)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL CONTRATO", Int64.Type}}),
+    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Column4", "Column5"}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Colunas Removidas","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// public v_bi_empresas
+let
+    Fonte = Oracle.Database("PROTHEUS", [HierarchicalNavigation=true]),
+    PROTHEUS = Fonte{[Schema="PROTHEUS"]}[Data],
+    V_KINCAID_EMPRESAS_P = PROTHEUS{[Name="V_KINCAID_EMPRESAS_P"]}[Data],
+    #"Linhas Filtradas" = Table.SelectRows(V_KINCAID_EMPRESAS_P, each ([classe_operacional] = "CLIENTE/PAGADOR") and ([CLIENTE_SITIACAO] = "EFETIVO") and ([matr_responsavel] = "LLM       ")),
+    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Linhas Filtradas",{{"data_cadastramento", type date}, {"data_cliente", type date}}),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Tipo Alterado1",{{"data_cliente", type date}, {"data_cadastramento", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"matr_responsavel"})
+in
+    #"Valor Substituído"
+
+// 2- Meta Cliente Anual
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (10)", each #"Transformar Arquivo (10)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (10)"}),
+    #"Transformar Arquivo (10)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (10)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (10)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL CLIENTE", Int64.Type}}),
+    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Column5", "Column6"}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Colunas Removidas","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 7- Ranking
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (23)", each #"Transformar Arquivo (23)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (23)"}),
+    #"Transformar Arquivo (23)1" = #"Outras Colunas Removidas1"{4}[#"Transformar Arquivo (23)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (23)1",{{"Métrica", type text}, {"Instituição", type text}, {"Guia", type text}, {"Categoria", type text}, {"DATA", type date}, {"Ano - Divulgação", Int64.Type}, {"Ano - Edição", type any}, {"Sócio", type text}, {"Band/Tier", type text}, {"Evolução", type text}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"Sócio"})
+in
+    #"Valor Substituído"
+
+// 7- Meta_Anual_Ranking
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (24)", each #"Transformar Arquivo (24)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (24)"}),
+    #"Transformar Arquivo (24)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (24)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (24)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// Meta_Anual_Manutencao
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (38)", each #"Transformar Arquivo (38)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (38)"}),
+    #"Transformar Arquivo (38)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (38)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (38)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 6- Associacoes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (20)", each #"Transformar Arquivo (20)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (20)"}),
+    #"Transformar Arquivo (20)1" = #"Outras Colunas Removidas1"{4}[#"Transformar Arquivo (20)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (20)1",{{"Métrica", type text}, {"Classificação", type text}, {"Instituição", type text}, {"Cargo", type text}, {"Área", type text}, {"Ano", Int64.Type}, {"DATA", type date}, {"Sócio", type text}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"Sócio"})
+in
+    #"Valor Substituído"
+
+// 6- Meta_Ano_Associacoes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (22)", each #"Transformar Arquivo (22)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (22)"}),
+    #"Transformar Arquivo (22)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (22)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (22)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 4- Eventos
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (14)", each #"Transformar Arquivo (14)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (14)"}),
+    #"Transformar Arquivo (14)1" = #"Outras Colunas Removidas1"{4}[#"Transformar Arquivo (14)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (14)1",{{"Início", type date}, {"Término", type date}, {"DATA", type date}, {"Tipo de evento por publico", type text}, {"Nome do evento", type text}, {"Realizado por", type text}, {"Área", type text}, {"Profissional", type text}, {"Papel", type text}, {"Local", type text}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"Profissional"})
+in
+    #"Valor Substituído"
+
+// 4- Meta_Ano-Eventos
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (16)", each #"Transformar Arquivo (16)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (16)"}),
+    #"Transformar Arquivo (16)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (16)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (16)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 5- Publicacoes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (17)", each #"Transformar Arquivo (17)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (17)"}),
+    #"Transformar Arquivo (17)1" = #"Outras Colunas Removidas1"{4}[#"Transformar Arquivo (17)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (17)1",{{"Categoria", type text}, {"Ano", Int64.Type}, {"Data Evento", type date}, {"Data", type date}, {" Título ", type text}, {" Veículo ", type text}, {"Seção", type text}, {" Mídia  ", type text}, {" Formato da notícia ", type text}, {" Assunto ", type text}, {"Porta-voz", type text}, {"Link", type text}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"Porta-voz"})
+in
+    #"Valor Substituído"
+
+// 5- Meta_Ano_Publi
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (19)", each #"Transformar Arquivo (19)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (19)"}),
+    #"Transformar Arquivo (19)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (19)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (19)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 8- Comite
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (28)", each #"Transformar Arquivo (28)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (28)"}),
+    #"Transformar Arquivo (28)1" = #"Outras Colunas Removidas1"{6}[#"Transformar Arquivo (28)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (28)1",{{"SÓCIO(SIGLA)", type text}, {"NOME DO COMITÊ", type text}, {"META", type text}, {"DATA", type date}, {"ANO", Int64.Type}}),
+    #"Linhas Filtradas" = Table.SelectRows(#"Tipo Alterado", each ([META] = "Sim")),
+    #"Valor Substituído" = Table.ReplaceValue(#"Linhas Filtradas","LLM","PUC",Replacer.ReplaceText,{"SÓCIO(SIGLA)"})
+in
+    #"Valor Substituído"
+
+// 8- Meta_Anual_Comite
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (29)", each #"Transformar Arquivo (29)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (29)"}),
+    #"Transformar Arquivo (29)1" = #"Outras Colunas Removidas1"{7}[#"Transformar Arquivo (29)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (29)1",{{"SOCIO", type text}, {"ANO", type date}, {"META ANUAL", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 0- Meta Mensal Fat
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (5)", each #"Transformar Arquivo (5)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (5)"}),
+    #"Transformar Arquivo (5)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (5)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (5)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","KMV",Replacer.ReplaceText,{"SOCIO"}),
+    #"Valor Substituído1" = Table.ReplaceValue(#"Valor Substituído","KMV","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído1"
+
+// 1- Meta_Hora_Mes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (7)", each #"Transformar Arquivo (7)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (7)"}),
+    #"Transformar Arquivo (7)1" = #"Outras Colunas Removidas1"{3}[#"Transformar Arquivo (7)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (7)1",{{"Matrícula", type text}, {"equipe", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"Matrícula"})
+in
+    #"Valor Substituído"
+
+// 2- Meta Cliente Mes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (9)", each #"Transformar Arquivo (9)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (9)"}),
+    #"Transformar Arquivo (9)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (9)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (9)1",{{"SOCIO", type text}, {"DATA", type date}, {"META MES CLIENTE", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 11- Meta Prospect Mes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (35)", each #"Transformar Arquivo (35)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (35)"}),
+    #"Transformar Arquivo (35)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (35)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (35)1",{{"SOCIO", type text}, {"DATA", type date}, {"META MES CLIENTE", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 3- Meta Contrato Mes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (39)", each #"Transformar Arquivo (39)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (39)"}),
+    #"Transformar Arquivo (39)1" = #"Outras Colunas Removidas1"{2}[#"Transformar Arquivo (39)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (39)1",{{"SOCIO", type text}, {"DATA", type date}, {"META MES CONTRATO", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 4- Meta_Mes_Eventos
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (15)", each #"Transformar Arquivo (15)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (15)"}),
+    #"Transformar Arquivo (15)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (15)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (15)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 5- Meta_Mes_Publi
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (18)", each #"Transformar Arquivo (18)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (18)"}),
+    #"Transformar Arquivo (18)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (18)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (18)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 6- Meta_Mes_Associacoes
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (21)", each #"Transformar Arquivo (21)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (21)"}),
+    #"Transformar Arquivo (21)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (21)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (21)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 0- Tabela_Conversao
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo", each #"Transformar Arquivo"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo"}),
+    #"Transformar Arquivo1" = #"Outras Colunas Removidas1"{0}[Transformar Arquivo],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo1",{{"Data", type date}, {"CotacaoUS", type number}, {"CotacaoEU", type number}, {"Column4", type any}}),
+    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Column4"}),
+    #"Linhas Filtradas" = Table.SelectRows(#"Colunas Removidas", each [Data] <> null and [Data] <> "")
+in
+    #"Linhas Filtradas"
+
+// Metas Pessoais
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (36)", each #"Transformar Arquivo (36)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (36)"}),
+    #"Transformar Arquivo (36)1" = #"Outras Colunas Removidas1"{7}[#"Transformar Arquivo (36)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (36)1",{{"SÓCIO", type text}, {"ANO ", type text}, {"ITEM", type text}, {"STATUS", type text}, {"DATA CONCLUSÃO", type date}, {"TIPO", type text}}),
+    #"Personalização Adicionada" = Table.AddColumn(#"Tipo Alterado", "DATA FORMATADA", each "01/01/" & [#"ANO "]),
+    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"DATA FORMATADA", type date}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado1","LLM","PUC",Replacer.ReplaceText,{"SÓCIO"})
+in
+    #"Valor Substituído"
+
+// 9- public v_kincaid_profissionais_bi
+let
+    Fonte = Oracle.Database("PROTHEUS", [HierarchicalNavigation=true]),
+    PROTHEUS = Fonte{[Schema="PROTHEUS"]}[Data],
+    V_PROTHEUS_BI_PROFISSIONAIS1 = PROTHEUS{[Name="V_PROTHEUS_BI_PROFISSIONAIS"]}[Data],
+    #"Colunas Renomeadas" = Table.RenameColumns(V_PROTHEUS_BI_PROFISSIONAIS1,{{"MATRICULA", "MATRICULA.1"}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Colunas Renomeadas","LLM","PUC",Replacer.ReplaceText,{"matricula"})
+in
+    #"Valor Substituído"
+
+// 10- Meta Mensal Despesas
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat/", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (32)", each #"Transformar Arquivo (32)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (32)"}),
+    #"Transformar Arquivo (32)1" = #"Outras Colunas Removidas1"{9}[#"Transformar Arquivo (32)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (32)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// 7- Meta_Mes_Ranking
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (25)", each #"Transformar Arquivo (25)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (25)"}),
+    #"Transformar Arquivo (25)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (25)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (25)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// Meta_Mensal_Manutencao
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (37)", each #"Transformar Arquivo (37)"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (37)"}),
+    #"Transformar Arquivo (37)1" = #"Outras Colunas Removidas1"{5}[#"Transformar Arquivo (37)"],
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Transformar Arquivo (37)1",{{"SOCIO", type text}, {"DATA", type date}, {"META", Int64.Type}}),
+    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado","LLM","PUC",Replacer.ReplaceText,{"SOCIO"})
+in
+    #"Valor Substituído"
+
+// Erros em public v_kincaid_notas_emitidas_suc_3
+let
+Fonte = #"0- public v_kincaid_notas_emitidas_suc_3",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em public v_kincaid_notas_emitidas_suc_3 (2)
+let
+Fonte = #"0- public v_kincaid_notas_emitidas_suc_3",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em public v_kincaid_notas_emitidas_suc_3 (3)
+let
+Fonte = #"0- public v_kincaid_notas_emitidas_suc_3",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em public v_kincaid_notas_emitidas_suc_3 (4)
+let
+Fonte = #"0- public v_kincaid_notas_emitidas_suc_3",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "filial", "nome_chave", "cliente", "codigo_cliente", "grupo_empesa", "contrato", "pagador", "pais", "codigo_pagador", "advogado_responsavel", "sigla_responsavel", "numero_nota", "ramo_atividade", "tabela_honorarios", "moeda_tabela", "advogado_contrato", "sigla_adv_contrato", "moeda", "valor_bruto", "valor_liquido", "impostos", "valor_despesas", "descontos", "data_emissao", "ano_emissao", "mes_emissao", "data_vencimento", "ano_vencimento", "mes_vencimento", "tipo_nota", "cnpj_cpf", "valor_exito", "valor_sucumbencia", "Exito", "Sucumbência"})
+in
+  #"Colunas Reordenadas"
+
+// Transformar o Arquivo de Exemplo
+let
+    Fonte = Excel.Workbook(Parâmetro1, null, true),
+    cotacao_Sheet = Fonte{[Item="cotacao",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(cotacao_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Parâmetro1
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra", Type="Binary", IsParameterQueryRequired=true]
+
+// Arquivo de Amostra
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    Navegação1 = Fonte{0}[Content]
+in
+    Navegação1
+
+// Transformar Arquivo
+let
+    Fonte = (Parâmetro1 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro1, null, true),
+    cotacao_Sheet = Fonte{[Item="cotacao",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(cotacao_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro2
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (2)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (2)
+let
+    Fonte = Excel.Workbook(Parâmetro2, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (2)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"socio xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="socio.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"socio xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (2)
+let
+    Fonte = (Parâmetro2 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro2, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro3
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (3)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (3)
+let
+    Fonte = Excel.Workbook(Parâmetro3, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (3)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"socio xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="socio.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"socio xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (3)
+let
+    Fonte = (Parâmetro3 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro3, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro4
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (4)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (4)
+let
+    Fonte = Excel.Workbook(Parâmetro4, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (4)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (4)
+let
+    Fonte = (Parâmetro4 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro4, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro5
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (5)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (5)
+let
+    Fonte = Excel.Workbook(Parâmetro5, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (5)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (5)
+let
+    Fonte = (Parâmetro5 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro5, null, true),
+    Planilha1_Sheet = Fonte{[Item="Planilha1",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Planilha1_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro6
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (6)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (6)
+let
+    Fonte = Excel.Workbook(Parâmetro6, null, true),
+    Anual_Sheet = Fonte{[Item="Anual",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Anual_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (6)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (6)
+let
+    Fonte = (Parâmetro6 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro6, null, true),
+    Anual_Sheet = Fonte{[Item="Anual",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Anual_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro7
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (7)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (7)
+let
+    Fonte = Excel.Workbook(Parâmetro7, null, true),
+    Mensal_Sheet = Fonte{[Item="Mensal",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Mensal_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (7)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta Mensal Hora xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta Mensal Hora.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta Mensal Hora xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (7)
+let
+    Fonte = (Parâmetro7 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro7, null, true),
+    Mensal_Sheet = Fonte{[Item="Mensal",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Mensal_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro8
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (8)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (8)
+let
+    Fonte = Excel.Workbook(Parâmetro8, null, true),
+    Anual_Sheet = Fonte{[Item="Anual",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Anual_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (8)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta Mensal Hora xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta Mensal Hora.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta Mensal Hora xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (8)
+let
+    Fonte = (Parâmetro8 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro8, null, true),
+    Anual_Sheet = Fonte{[Item="Anual",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Anual_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro9
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (9)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (9)
+let
+    Fonte = Excel.Workbook(Parâmetro9, null, true),
+    Meta_Clientes_Mes_Sheet = Fonte{[Item="Meta_Clientes_Mes",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Clientes_Mes_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (9)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (9)
+let
+    Fonte = (Parâmetro9 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro9, null, true),
+    Meta_Clientes_Mes_Sheet = Fonte{[Item="Meta_Clientes_Mes",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Clientes_Mes_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro10
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (10)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (10)
+let
+    Fonte = Excel.Workbook(Parâmetro10, null, true),
+    #"Meta Cliente Ano_Sheet" = Fonte{[Item="Meta Cliente Ano",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Cliente Ano_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (10)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (10)
+let
+    Fonte = (Parâmetro10 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro10, null, true),
+    #"Meta Cliente Ano_Sheet" = Fonte{[Item="Meta Cliente Ano",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Cliente Ano_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro11
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (11)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (11)
+let
+    Fonte = Excel.Workbook(Parâmetro11, null, true),
+    Anual_Sheet = Fonte{[Item="Anual",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Anual_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (11)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta Mensal Hora xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta Mensal Hora.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta Mensal Hora xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (11)
+let
+    Fonte = (Parâmetro11 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro11, null, true),
+    Anual_Sheet = Fonte{[Item="Anual",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Anual_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro12
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (12)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (12)
+let
+    Fonte = Excel.Workbook(Parâmetro12, null, true),
+    #"Meta Contrato Ano_Sheet" = Fonte{[Item="Meta Contrato Ano",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Contrato Ano_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (12)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (12)
+let
+    Fonte = (Parâmetro12 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro12, null, true),
+    #"Meta Contrato Ano_Sheet" = Fonte{[Item="Meta Contrato Ano",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Contrato Ano_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro13
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (13)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (13)
+let
+    Fonte = Excel.Workbook(Parâmetro13, null, true),
+    Meta_Clientes_Mes_Sheet = Fonte{[Item="Meta_Clientes_Mes",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Clientes_Mes_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (13)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (13)
+let
+    Fonte = (Parâmetro13 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro13, null, true),
+    Meta_Clientes_Mes_Sheet = Fonte{[Item="Meta_Clientes_Mes",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Clientes_Mes_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro14
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (14)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (14)
+let
+    Fonte = Excel.Workbook(Parâmetro14, null, true),
+    Eventos_Sheet = Fonte{[Item="Eventos",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Eventos_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (14)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="BI_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (14)
+let
+    Fonte = (Parâmetro14 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro14, null, true),
+    Eventos_Sheet = Fonte{[Item="Eventos",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Eventos_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro15
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (15)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (15)
+let
+    Fonte = Excel.Workbook(Parâmetro15, null, true),
+    Meta_Mensal_Eventos_Sheet = Fonte{[Item="Meta_Mensal_Eventos",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Eventos_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (15)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (15)
+let
+    Fonte = (Parâmetro15 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro15, null, true),
+    Meta_Mensal_Eventos_Sheet = Fonte{[Item="Meta_Mensal_Eventos",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Eventos_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro16
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (16)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (16)
+let
+    Fonte = Excel.Workbook(Parâmetro16, null, true),
+    Meta_Anual_Eventos_Sheet = Fonte{[Item="Meta_Anual_Eventos",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Eventos_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (16)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (16)
+let
+    Fonte = (Parâmetro16 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro16, null, true),
+    Meta_Anual_Eventos_Sheet = Fonte{[Item="Meta_Anual_Eventos",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Eventos_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro17
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (17)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (17)
+let
+    Fonte = Excel.Workbook(Parâmetro17, null, true),
+    Publicações_Sheet = Fonte{[Item="Publicações",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Publicações_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (17)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="BI_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (17)
+let
+    Fonte = (Parâmetro17 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro17, null, true),
+    Publicações_Sheet = Fonte{[Item="Publicações",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Publicações_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro18
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (18)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (18)
+let
+    Fonte = Excel.Workbook(Parâmetro18, null, true),
+    Meta_Mensal_Publi_Sheet = Fonte{[Item="Meta_Mensal_Publi",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Publi_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (18)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (18)
+let
+    Fonte = (Parâmetro18 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro18, null, true),
+    Meta_Mensal_Publi_Sheet = Fonte{[Item="Meta_Mensal_Publi",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Publi_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro19
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (19)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (19)
+let
+    Fonte = Excel.Workbook(Parâmetro19, null, true),
+    Meta_Anual_Publi_Sheet = Fonte{[Item="Meta_Anual_Publi",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Publi_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (19)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (19)
+let
+    Fonte = (Parâmetro19 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro19, null, true),
+    Meta_Anual_Publi_Sheet = Fonte{[Item="Meta_Anual_Publi",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Publi_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro20
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (20)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (20)
+let
+    Fonte = Excel.Workbook(Parâmetro20, null, true),
+    #"Câmaras e Associações_Sheet" = Fonte{[Item="Câmaras e Associações",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Câmaras e Associações_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (20)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="BI_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (20)
+let
+    Fonte = (Parâmetro20 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro20, null, true),
+    #"Câmaras e Associações_Sheet" = Fonte{[Item="Câmaras e Associações",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Câmaras e Associações_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro21
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (21)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (21)
+let
+    Fonte = Excel.Workbook(Parâmetro21, null, true),
+    Meta_Mensal_Associ_Sheet = Fonte{[Item="Meta_Mensal_Associ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Associ_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (21)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (21)
+let
+    Fonte = (Parâmetro21 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro21, null, true),
+    Meta_Mensal_Associ_Sheet = Fonte{[Item="Meta_Mensal_Associ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Associ_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro22
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (22)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (22)
+let
+    Fonte = Excel.Workbook(Parâmetro22, null, true),
+    Meta_Anual_Associ_Sheet = Fonte{[Item="Meta_Anual_Associ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Associ_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (22)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (22)
+let
+    Fonte = (Parâmetro22 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro22, null, true),
+    Meta_Anual_Associ_Sheet = Fonte{[Item="Meta_Anual_Associ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Associ_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro23
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (23)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (23)
+let
+    Fonte = Excel.Workbook(Parâmetro23, null, true),
+    #"Rankings e Premiações_Sheet" = Fonte{[Item="Rankings e Premiações",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Rankings e Premiações_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (23)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="BI_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"BI_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (23)
+let
+    Fonte = (Parâmetro23 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro23, null, true),
+    #"Rankings e Premiações_Sheet" = Fonte{[Item="Rankings e Premiações",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Rankings e Premiações_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro24
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (24)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (24)
+let
+    Fonte = Excel.Workbook(Parâmetro24, null, true),
+    Meta_Anual_Rank_Sheet = Fonte{[Item="Meta_Anual_Rank",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Rank_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (24)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (24)
+let
+    Fonte = (Parâmetro24 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro24, null, true),
+    Meta_Anual_Rank_Sheet = Fonte{[Item="Meta_Anual_Rank",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Rank_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro25
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (25)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (25)
+let
+    Fonte = Excel.Workbook(Parâmetro25, null, true),
+    Meta_Mensal_Rank_Sheet = Fonte{[Item="Meta_Mensal_Rank",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Rank_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (25)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (25)
+let
+    Fonte = (Parâmetro25 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro25, null, true),
+    Meta_Mensal_Rank_Sheet = Fonte{[Item="Meta_Mensal_Rank",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Rank_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro26
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (26)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (26)
+let
+    Fonte = Excel.Workbook(Parâmetro26, null, true),
+    Comite_Sheet = Fonte{[Item="Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (26)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Comitês Internos xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Comitês Internos.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Comitês Internos xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (26)
+let
+    Fonte = (Parâmetro26 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro26, null, true),
+    Comite_Sheet = Fonte{[Item="Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro27
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (27)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (27)
+let
+    Fonte = Excel.Workbook(Parâmetro27, null, true),
+    Meta_Anual_Comite_Sheet = Fonte{[Item="Meta_Anual_Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (27)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Comite xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Comite.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Comite xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (27)
+let
+    Fonte = (Parâmetro27 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro27, null, true),
+    Meta_Anual_Comite_Sheet = Fonte{[Item="Meta_Anual_Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro28
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (28)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (28)
+let
+    Fonte = Excel.Workbook(Parâmetro28, null, true),
+    Comite_Sheet = Fonte{[Item="Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (28)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Comitês Internos xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Comitês Internos.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Comitês Internos xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (28)
+let
+    Fonte = (Parâmetro28 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro28, null, true),
+    Comite_Sheet = Fonte{[Item="Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro29
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (29)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (29)
+let
+    Fonte = Excel.Workbook(Parâmetro29, null, true),
+    Meta_Anual_Comite_Sheet = Fonte{[Item="Meta_Anual_Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (29)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Comite xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Comite.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Comite xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (29)
+let
+    Fonte = (Parâmetro29 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro29, null, true),
+    Meta_Anual_Comite_Sheet = Fonte{[Item="Meta_Anual_Comite",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Comite_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro30
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (30)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (30)
+let
+    Fonte = Excel.Workbook(Parâmetro30, null, true),
+    Despesas_Sheet = Fonte{[Item="Despesas",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Despesas_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (30)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Despesas xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Despesas.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Despesas xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (30)
+let
+    Fonte = (Parâmetro30 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro30, null, true),
+    Despesas_Sheet = Fonte{[Item="Despesas",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Despesas_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro31
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (31)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (31)
+let
+    Fonte = Excel.Workbook(Parâmetro31, null, true),
+    Meta_Anual_Despesas_Sheet = Fonte{[Item="Meta_Anual_Despesas",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Despesas_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (31)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat/", [ApiVersion = 15]),
+    #"Meta_Despesas xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Despesas.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Despesas xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (31)
+let
+    Fonte = (Parâmetro31 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro31, null, true),
+    Meta_Anual_Despesas_Sheet = Fonte{[Item="Meta_Anual_Despesas",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Anual_Despesas_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro32
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (32)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (32)
+let
+    Fonte = Excel.Workbook(Parâmetro32, null, true),
+    Meta_Mensal_Despesas_Sheet = Fonte{[Item="Meta_Mensal_Despesas",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Despesas_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (32)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat/", [ApiVersion = 15]),
+    #"Meta_Despesas xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Despesas.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Despesas xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (32)
+let
+    Fonte = (Parâmetro32 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro32, null, true),
+    Meta_Mensal_Despesas_Sheet = Fonte{[Item="Meta_Mensal_Despesas",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Mensal_Despesas_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro33
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (33)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (33)
+let
+    Fonte = Excel.Workbook(Parâmetro33, null, true),
+    #"Meta Prospect Ano _Sheet" = Fonte{[Item="Meta Prospect Ano ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Prospect Ano _Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (33)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (33)
+let
+    Fonte = (Parâmetro33 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro33, null, true),
+    #"Meta Prospect Ano _Sheet" = Fonte{[Item="Meta Prospect Ano ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Prospect Ano _Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro34
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (34)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (34)
+let
+    Fonte = Excel.Workbook(Parâmetro34, null, true),
+    #"Meta Prospect Ano _Sheet" = Fonte{[Item="Meta Prospect Ano ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Prospect Ano _Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (34)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (34)
+let
+    Fonte = (Parâmetro34 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro34, null, true),
+    #"Meta Prospect Ano _Sheet" = Fonte{[Item="Meta Prospect Ano ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta Prospect Ano _Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro35
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (35)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (35)
+let
+    Fonte = Excel.Workbook(Parâmetro35, null, true),
+    #"Meta_Prospect_Mes _Sheet" = Fonte{[Item="Meta_Prospect_Mes ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta_Prospect_Mes _Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (35)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (35)
+let
+    Fonte = (Parâmetro35 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro35, null, true),
+    #"Meta_Prospect_Mes _Sheet" = Fonte{[Item="Meta_Prospect_Mes ",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta_Prospect_Mes _Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro36
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (36)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (36)
+let
+    Fonte = Excel.Workbook(Parâmetro36, null, true),
+    #"METAS PESSOAIS_Sheet" = Fonte{[Item="METAS PESSOAIS",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"METAS PESSOAIS_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (36)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Comite xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Comite.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Comite xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (36)
+let
+    Fonte = (Parâmetro36 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro36, null, true),
+    #"METAS PESSOAIS_Sheet" = Fonte{[Item="METAS PESSOAIS",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"METAS PESSOAIS_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro37
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (37)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (37)
+let
+    Fonte = Excel.Workbook(Parâmetro37, null, true),
+    #"Meta_Mensal_Rank Manutencao_Sheet" = Fonte{[Item="Meta_Mensal_Rank Manutencao",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta_Mensal_Rank Manutencao_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (37)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (37)
+let
+    Fonte = (Parâmetro37 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro37, null, true),
+    #"Meta_Mensal_Rank Manutencao_Sheet" = Fonte{[Item="Meta_Mensal_Rank Manutencao",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta_Mensal_Rank Manutencao_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro38
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (38)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (38)
+let
+    Fonte = Excel.Workbook(Parâmetro38, null, true),
+    #"Meta_Anual_Rank Manutencao_Sheet" = Fonte{[Item="Meta_Anual_Rank Manutencao",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta_Anual_Rank Manutencao_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (38)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta_Marketing.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta_Marketing xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (38)
+let
+    Fonte = (Parâmetro38 as binary) => let
+    Fonte = Excel.Workbook(Parâmetro38, null, true),
+    #"Meta_Anual_Rank Manutencao_Sheet" = Fonte{[Item="Meta_Anual_Rank Manutencao",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Meta_Anual_Rank Manutencao_Sheet", [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Parâmetro39
+... meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (39)", Type="Binary", IsParameterQueryRequired=true]
+
+// Transformar o Arquivo de Exemplo (39)
+let
+    Fonte = Excel.Workbook(Parâmetro39, null, true),
+    Meta_Contratos_Mes_Sheet = Fonte{[Item="Meta_Contratos_Mes",Kind="Sheet"]}[Data],
+    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Contratos_Mes_Sheet, [PromoteAllScalars=true])
+in
+    #"Cabeçalhos Promovidos"
+
+// Arquivo de Amostra (39)
+let
+    Fonte = SharePoint.Files("https://kincaid1.sharepoint.com/sites/PowerBIFat", [ApiVersion = 15]),
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/" = Fonte{[Name="Meta.xlsx",#"Folder Path"="https://kincaid1.sharepoint.com/sites/PowerBIFat/Documentos Compartilhados/"]}[Content]
+in
+    #"Meta xlsx_https://kincaid1 sharepoint com/sites/PowerBIFat/Documentos Compartilhados/"
+
+// Transformar Arquivo (39)
+let
+    Fonte = (Parâmetro39) => let
+        Fonte = Excel.Workbook(Parâmetro39, null, true),
+        Meta_Contratos_Mes_Sheet = Fonte{[Item="Meta_Contratos_Mes",Kind="Sheet"]}[Data],
+        #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Meta_Contratos_Mes_Sheet, [PromoteAllScalars=true])
+    in
+        #"Cabeçalhos Promovidos"
+in
+    Fonte
+
+// Erros em 1- TabelaTS
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em 1- TabelaTS (2)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em 1- TabelaTS (3)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"}),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Reordenadas",{{"tim_hor_exi", type date}})
+in
+    #"Tipo Alterado"
+
+// Erros em 1- TabelaTS (4)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO"})
+in
+  #"Colunas Reordenadas"
+
+// 13- Equipes
+let
+    Fonte = PostgreSQL.Database("191.237.250.229:54789", "JURIDICO"),
+    public_c_equipes = Fonte{[Schema="public",Item="c_equipes"]}[Data]
+in
+    public_c_equipes
+
+// Erros em 1- TabelaTS (5)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em 1- TabelaTS (6)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em 1- TabelaTS (7)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+    #"Linhas Filtradas" = Table.SelectRows(#"Incompatibilidades de Tipo Detectadas", each [tim_ide] <> null and [tim_ide] <> ""),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Linhas Filtradas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em 1- TabelaTS (8)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"})
+in
+  #"Colunas Reordenadas"
+
+// Erros em 1- TabelaTS (9)
+let
+Fonte = #"1- TabelaTS",
+  #"Incompatibilidades de Tipo Detectadas" = let
+    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+    fieldNames = Record.FieldNames(recordTypeFields),
+    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+in
+    Table.TransformColumns(Fonte, pairs),
+  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"}),
+  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "tim_ide", "fun_dta_dem", "fun_mat", "fun_nom", "car_dsc", "eqp_dsc", "tim_fky_emp_ide", "emp_ape", "emp_fky_adv_res", "responsavel", "ctr_fky_mod_ide", "tim_dta", "tim_min", "tim_hor_exi", "tim_dsc", "tim_flg_gra", "caso_cobravel", "tim_flg_atv", "tim_qem", "tim_qdo", "tim_fky_fip_ide", "tim_fky_fco_ide", "TS_CLIENTE_RESP_NOME", "TS_CLIENTE_STATUS", "TS_CLIENTE_PERFIL", "COBRAVEL", "TS_CLIENTE_SIT_CADASTRO", "TS_CLIENTE_SIT_CLIENTE", "TS_CLIENTE_DT_CADASTRO", "TS_CLIENTE_DT_ABERTURA", "TS_CLIENTE_DT_ENCERRAMENTO", "TS_CLIENTE_UF", "TS_CLIENTE_MUNICIPIO", "TS_CLIENTE_BAIRRO", "TS_CLIENTE_CEP", "TS_CLIENTE_ENDERECO", "TS_CLIENTE_COMPLEMENTO", "TS_CONTRATO_CODIGO", "TS_CONTRATO_NOME", "TS_CONTRATO_SOCIO_RESP_NOME", "TS_CONTRATO_STATUS", "TS_CONTRATO_TIPO_HONORARIO", "TS_CONTRATO_MOEDA_LIMITE", "TS_CONTRATO_VALOR_LIMITE", "TS_CONTRATO_DATA_CADASTRO", "TS_CONTRATO_VIGENCIA_INICIAL", "TS_CONTRATO_VIGENCIA_FINAL", "TS_CONTRATO_STATUS_CONTRATACAO", "TS_CASO_CODIGO", "TS_CASO_ASSUNTO", "TS_CASO_SITUACAO", "TS_CASO_CADASTRO", "TS_CASO_COBRAVEL", "TS_PRE_FARURA_SUTUACAO", "PRE_FATURA", "TS_DATA", "TS_DATA_INCLUSAO", "TS_HORA_INCLUSAO", "TS_DATA_ALTERACAO", "TS_HORA_ALTERACAO", "TS_QUEM_REVISOU", "TS_PROF_REV_NOME", "TS_PROF_REV_DEMISSAO", "TS_TEMPO_TRAB", "TS_TEMPO_REV", "TS_TEMPO_PROD", "TS_TAB_HON", "TS_TAB_HON_MOEDA", "TS_VALOR_HORA", "TS_VALOR_TAB_HON", "TS_VALOR_PRE_FATURA", "TS_COTACAO", "TS_SITUACAO", "TS_VINCULO", "TS_ESCRITORIO", "TIPO_CASO", "TS_CONTRATO_COBRAVEL"})
+in
+  #"Colunas Reordenadas"
