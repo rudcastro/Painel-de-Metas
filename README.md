@@ -8,7 +8,7 @@ Trabalho apresentado ao curso [BI MASTER](https://ica.puc-rio.ai/bi-master) como
 
 - [Link para o código] https://github.com/rudcastro/Painel-de-Metas
 
-- [Link para a monografia](https://Documentação do Projeto Painel Interativo de Metas.pdf)
+- [Link para a monografia](https://Projeto_Interativo_Metas.pdf)
 
 ---
 
